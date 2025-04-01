@@ -18,6 +18,9 @@
 
 ## 构建项目
 
+请先把模型下载到项目根目录，并放置到`checkpoints`目录内，如果不想打包模型到镜像内，
+可参考后面[checkpoints其他处理方式](#checkpoints其他处理方式)小节。
+
 ```
 git clone https://github.com/bytedance/MegaTTS3.git
 cd MegaTTS3
@@ -36,8 +39,22 @@ docker run -it -p 7929:7929 --gpus all -e CUDA_VISIBLE_DEVICES=0 megatts3:latest
 ```
 docker run -it -p 7929:7929  megatts3:latest
 ```
-
 启动后访问`http://0.0.0.0:7929/`即可。
+
+
+## checkpoints其他处理方式
+
+如果不希望把checkpoints拷贝进容器，可以使用映射目录的方式，既可以节省一些构建时间，也可以显著减少镜像体积。
+
+```
+docker run -it -p 7929:7929 -v /your/path/checkpoints:/app/checkoupoints megatts3:latest
+```
+
+🟥 对于windows用户，如果采用目录映射的方式，一定要主要按照windows的路径方式书写:
+
+```
+docker run -it -p 7929:7929 -v D:\your\path\checkpoints:/app/checkoupoints megatts3:latest
+```
 
 ## License
 This project is licensed under the [Apache-2.0 License](LICENSE).
