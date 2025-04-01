@@ -45,7 +45,7 @@ def align(self, wav):
         mel = mel[:, :, :prompt_max_frame]
         token = torch.LongTensor([[798]]).to(self.device)
         audio_features = self.aligner_lm.embed_audio(mel)
-        for i in range(512):
+        for i in range(768):
             with torch.cuda.amp.autocast(dtype=self.precision, enabled=True):
                 logits = self.aligner_lm.logits(token, audio_features, None)
                 token_pred = torch.argmax(F.softmax(logits[:, -1], dim=-1), 1)[None]
