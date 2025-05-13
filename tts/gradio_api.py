@@ -12,7 +12,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
 import multiprocessing as mp
 import torch
 import os
@@ -27,7 +26,6 @@ def model_worker(input_queue, output_queue, device_id):
     if device_id is not None:
         device = torch.device(f'cuda:{device_id}')
     infer_pipe = MegaTTS3DiTInfer(device=device)
-    os.system(f'pkill -f "voidgpu{device_id}"')
 
     while True:
         task = input_queue.get()
@@ -60,17 +58,17 @@ def main(inp_audio, inp_npy, inp_text, infer_timestep, p_w, t_w, processes, inpu
 
 if __name__ == '__main__':
     mp.set_start_method('spawn', force=True)
+    mp_manager = mp.Manager()
+
     devices = os.environ.get('CUDA_VISIBLE_DEVICES', '')
     if devices != '':
         devices = os.environ.get('CUDA_VISIBLE_DEVICES', '').split(",")
-        for d in devices:
-            os.system(f'pkill -f "voidgpu{d}"')
     else:
         devices = None
     
     num_workers = 1
-    input_queue = mp.Queue()
-    output_queue = mp.Queue()
+    input_queue = mp_manager.Queue()
+    output_queue = mp_manager.Queue()
     processes = []
 
     print("Start open workers")

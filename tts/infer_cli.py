@@ -31,7 +31,7 @@ from tts.utils.audio_utils.io import save_wav, to_wav_bytes, convert_to_wav_byte
 from tts.utils.commons.ckpt_utils import load_ckpt
 from tts.utils.commons.hparams import set_hparams, hparams
 from tts.utils.text_utils.text_encoder import TokenTextEncoder
-from tts.utils.text_utils.split_text import chunk_text_chinese, chunk_text_english
+from tts.utils.text_utils.split_text import chunk_text_chinese, chunk_text_english, chunk_text_chinesev2
 from tts.utils.commons.hparams import hparams, set_hparams
 
 
@@ -100,7 +100,7 @@ class MegaTTS3DiTInfer():
 
         ''' Load Dict '''
         current_dir = os.path.dirname(os.path.abspath(__file__))
-        ling_dict = json.load(open(f"{current_dir}/utils/text_utils/dict.json"))
+        ling_dict = json.load(open(f"{current_dir}/utils/text_utils/dict.json", encoding='utf-8-sig'))
         self.ling_dict = {k: TokenTextEncoder(None, vocab_list=ling_dict[k], replace_oov='<UNK>') for k in ['phone', 'tone']}
         self.token_encoder = token_encoder = self.ling_dict['phone']
         ph_dict_size = len(token_encoder)
@@ -218,7 +218,7 @@ class MegaTTS3DiTInfer():
                 text_segs = chunk_text_english(input_text, max_chars=130)
             else:
                 input_text = self.zh_normalizer.normalize(input_text)
-                text_segs = chunk_text_chinese(input_text, limit=60)
+                text_segs = chunk_text_chinesev2(input_text, limit=60)
 
             for seg_i, text in enumerate(text_segs):
                 ''' G2P '''
